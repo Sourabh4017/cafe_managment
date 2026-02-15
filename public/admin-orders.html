@@ -1,0 +1,528 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Orders</title>
+</head>
+<body>
+<h1>Customer Orders</h1>
+<table border="1">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Table</th>
+      <th>Items</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="ordersTable"></tbody>
+</table>
+
+<script>
+async function loadOrders() {
+  const res = await fetch("/api/admin/orders");
+  const orders = await res.json();
+
+  const tbody = document.getElementById("orders");
+  tbody.innerHTML = "";
+
+  orders.forEach(o => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${o.id}</td>
+        <td>${o.tableNo}</td>
+        <td>${o.items}</td>
+        <td>₹${o.total}</td>
+        <td>
+          <select onchange="updateStatus(${o.id}, this.value)">
+            <option ${o.status === "Pending" && "selected"}>Pending</option>
+            <option ${o.status === "Preparing" && "selected"}>Preparing</option>
+            <option ${o.status === "Served" && "selected"}>Served</option>
+          </select>
+        </td>
+        <td>
+          <button onclick="deleteOrder(${o.id})">Delete</button>
+        </td>
+      </tr>`;
+  });
+}
+
+async function updateStatus(id, status) {
+  await fetch(`/api/admin/orders/${id}/status`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
+}
+
+async function deleteOrder(id) {
+  await fetch(`/api/admin/orders/${id}`, { method: "DELETE" });
+  loadOrders();
+}
+
+loadOrders();
+</script>
+
+<script>
+async function loadOrders() {
+  const res = await fetch("/api/order");
+  const orders = await res.json();
+
+  const table = document.getElementById("ordersTable");
+  table.innerHTML = "";
+
+  orders.forEach(order => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${order.id}</td>
+      <td>${order.tableNo}</td>
+      <td>${JSON.parse(order.items).map(i => i.name).join(", ")}</td>
+      <td>₹${order.total}</td>
+      <td>${order.status}</td>
+      <td>
+        <button onclick="updateStatus(${order.id}, 'Completed')">Complete</button>
+      </td>
+    `;
+
+    table.appendChild(tr);
+  });
+}
+
+async function updateStatus(id, status) {
+  await fetch("/api/order", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, status })
+  });
+  loadOrders();
+}
+
+loadOrders();
+</script>
+
+
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>Customer Orders</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #eee; }
+    button {
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .delete {
+      background: red;
+      color: white;
+      border: none;
+    }
+    .disabled {
+      background: gray;
+      color: white;
+      cursor: not-allowed;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Customer Orders</h1>
+
+<button onclick="logout()">Logout</button>
+
+<br><br>
+
+<table>
+  <thead>
+    <tr>
+      <th>Table No</th>
+      <th>Items</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="orders"></tbody>
+</table>
+
+<script>
+async function logout() {
+  document.cookie = "admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+  window.location.href = "/admin/login";
+}
+
+/* ================= LOAD ORDERS ================= */
+async function loadOrders() {
+  const res = await fetch("/api/admin/orders");
+
+  if (res.status === 401) {
+    window.location.href = "/admin/login";
+    return;
+  }
+
+  const text = await res.text();
+  const orders = text ? JSON.parse(text) : [];
+
+  const tbody = document.getElementById("orders");
+  tbody.innerHTML = "";
+
+  orders.forEach(order => {
+    const items = JSON.parse(order.items)
+      .map(i => `${i.name} – ₹${i.price}`)
+      .join("<br>");
+
+    const canDelete = order.status === "Pending";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${order.tableNo}</td>
+        <td>${items}</td>
+        <td>₹${order.total}</td>
+        <td>${order.status}</td>
+        <td>
+          ${
+            canDelete
+              ? `<button class="delete" onclick="deleteOrder('${order.id}')">❌ Delete</button>`
+              : `<button class="disabled" disabled>❌ Delete</button>`
+          }
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* ================= DELETE ORDER ================= */
+async function deleteOrder(id) {
+  if (!confirm("Delete this pending order?")) return;
+
+  const res = await fetch(`/api/admin/orders/${id}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.message || "Delete failed");
+    return;
+  }
+
+  loadOrders();
+}
+
+loadOrders();
+</script>
+
+</body>
+</html> -->
+
+<!-- fully Working code-->
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>Customer Orders</title>
+</head>
+<body>
+
+<h1>Customer Orders</h1>
+<button onclick="logout()">Logout</button>
+
+<table border="1" width="100%">
+  <thead>
+    <tr>
+      <th>Table No</th>
+      <th>Items</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="orders"></tbody>
+</table>
+
+
+
+<script>
+async function loadOrders() {
+  const res = await fetch("/api/admin/orders");
+  const orders = await res.json();
+
+  const tbody = document.getElementById("orders");
+  tbody.innerHTML = "";
+
+  orders.forEach(order => {
+    const items = JSON.parse(order.items)
+      .map(i => `${i.name} – ₹${i.price}`)
+      .join("<br>");
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${order.tableNo}</td>
+        <td>${items}</td>
+        <td>₹${order.total}</td>
+        <td>${order.status}</td>
+        <td>
+          ${order.status === "Pending"
+            ? `<button onclick="deleteOrder(${order.id})">❌ Delete</button>`
+            : ""
+          }
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function deleteOrder(id) {
+  if (!confirm("Delete this pending order?")) return;
+
+  const res = await fetch(`/api/admin/orders/${id}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json();
+  alert(data.message);
+
+  loadOrders();
+}
+
+// Initial load
+loadOrders();
+
+// ✅ AUTO REFRESH EVERY 8 SECONDS
+setInterval(loadOrders, 8000);
+</script>
+
+
+</body>
+</html>
+ -->
+
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title> Cafe Sourabh</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0f0f0f;
+      color: #f5f5f5;
+      font-family: "Georgia", serif;
+    }
+
+    header {
+      padding: 20px 30px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    header span {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .logout {
+      background: #dc2626;
+      color: #fff;
+    }
+
+    main {
+      padding: 30px;
+    }
+
+    .table-wrap {
+      background: #fff;
+      color: #000;
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f4f4f4;
+      padding: 12px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 12px;
+      border-top: 1px solid #ddd;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    .items {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .status {
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      font-size: 12px;
+    }
+
+    .Pending {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .Preparing {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .Served {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .Cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .delete {
+      background: #111;
+      color: #fff;
+      margin-top: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <h1>🍣 Customer Orders</h1>
+    <span>Customer Orders – Admin View</span>
+  </div>
+  <button class="logout" onclick="logout()">Logout</button>
+</header>
+
+<main>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Table</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="orders"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  Auto refresh enabled • Live kitchen sync • Café Sourabh
+</footer>
+
+<script>
+async function logout() {
+  await fetch("/api/logout", { method: "POST" });
+  window.location.href = "/admin/login";
+}
+
+async function loadOrders() {
+  const res = await fetch("/api/admin/orders");
+  const orders = await res.json();
+
+  const tbody = document.getElementById("orders");
+  tbody.innerHTML = "";
+
+  orders.forEach(order => {
+    const items = JSON.parse(order.items)
+      .map(i => `${i.name} – ₹${i.price}`)
+      .join("<br>");
+
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${order.tableNo}</strong></td>
+        <td class="items">${items}</td>
+        <td>₹${order.total}</td>
+        <td>
+          <span class="status ${order.status}">
+            ${order.status}
+          </span>
+        </td>
+        <td>
+          ${
+            order.status === "Pending"
+              ? `<button class="delete" onclick="deleteOrder(${order.id})">
+                   ❌ Cancel
+                 </button>`
+              : "—"
+          }
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function deleteOrder(id) {
+  if (!confirm("Cancel this pending order?")) return;
+
+  const res = await fetch(`/api/admin/orders/${id}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json();
+  alert(data.message);
+  loadOrders();
+}
+
+/* INITIAL LOAD */
+loadOrders();
+
+/* AUTO REFRESH EVERY 8 SECONDS */
+setInterval(loadOrders, 8000);
+</script>
+
+</body>
+</html>

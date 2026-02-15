@@ -1,0 +1,5 @@
+<audio
+  ref={audioRef}
+  src="/sounds/new-order.mp3"
+  preload="auto"
+/>

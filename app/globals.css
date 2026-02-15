@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/* @import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -23,4 +23,146 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+} */
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #f9fafb;
 }
+
+/* 🌸 Sakura Animation */
+.sakura {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sakura span {
+  position: absolute;
+  top: -10%;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #ffd6e7, #ff9ebd);
+  border-radius: 50% 50% 50% 0;
+  opacity: 0.8;
+  transform: rotate(45deg);
+  animation: fall linear infinite;
+}
+
+.sakura span:nth-child(odd) {
+  width: 10px;
+  height: 10px;
+  opacity: 0.6;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateX(0) translateY(0) rotate(45deg);
+  }
+  100% {
+    transform: translateX(-80px) translateY(110vh) rotate(360deg);
+  }
+}
+
+/* Random positions & speeds */
+.sakura span {
+  left: calc(100% * var(--i));
+  animation-duration: calc(10s + 10s * var(--i));
+}
+
+
+/* :root {
+  --bg: #0b0b0b;
+  --card: #141414;
+  --primary: #f59e0b;
+  --primary-hover: #d97706;
+  --text: #ffffff;
+  --muted: #9ca3af;
+  --border: #262626;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, Arial, sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  background: var(--primary);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background: var(--primary-hover);
+}
+
+input, select {
+  background: #111;
+  color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.badge.pending {
+  background: #78350f;
+}
+
+.badge.preparing {
+  background: #92400e;
+}
+
+.badge.served {
+  background: #14532d;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  color: var(--muted);
+  font-weight: 600;
+} */

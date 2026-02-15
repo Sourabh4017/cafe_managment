@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+}
+
+model MenuItem {
+  id    Int     @id @default(autoincrement())
+  name  String
+  price Float
+  image String
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  tableNo   String
+  items     String
+  total     Int
+  status    String   @default("Pending")
+  createdAt DateTime @default(now())
+}
+
+
